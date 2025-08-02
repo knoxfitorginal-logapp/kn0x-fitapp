@@ -299,6 +299,40 @@
       .catch(error => alert("Login failed: " + error.message));
   }
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const loginTab = document.getElementById("loginTab");
+    const registerTab = document.getElementById("registerTab");
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+
+    if (loginTab && registerTab && loginForm && registerForm) {
+      loginTab.addEventListener("click", function () {
+        loginTab.classList.add("text-gray-700", "border-red-500");
+        registerTab.classList.remove("text-gray-700", "border-red-500");
+        registerTab.classList.add("text-gray-500");
+
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+      });
+
+      registerTab.addEventListener("click", function () {
+        registerTab.classList.add("text-gray-700", "border-red-500");
+        loginTab.classList.remove("text-gray-700", "border-red-500");
+        loginTab.classList.add("text-gray-500");
+
+        registerForm.style.display = "block";
+        loginForm.style.display = "none";
+      });
+
+      // Default view: show login
+      loginForm.style.display = "block";
+      registerForm.style.display = "none";
+    }
+  });
+</script>
+
 </head>
 <body class="min-h-screen">
 <!-- Login/Registration Modal -->
