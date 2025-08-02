@@ -270,6 +270,42 @@
             }
         }
     </style>
+
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZ6hZRwtPRYNgNU_EDFAvWq_9sGvKoCv4",
+    authDomain: "kn0xfitlog-auth.firebaseapp.com",
+    projectId: "kn0xfitlog-auth",
+    storageBucket: "kn0xfitlog-auth.firebasestorage.app",
+    messagingSenderId: "232941738904",
+    appId: "1:232941738904:web:1dc79f624e10207592a9ed"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  // Handle Register
+  function handleRegister() {
+    const email = document.getElementById("registerEmail").value;
+    const password = document.getElementById("registerPassword").value;
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(userCredential => alert("Registered successfully!"))
+      .catch(error => alert(error.message));
+  }
+
+  // Handle Login
+  function handleLogin() {
+    const email = document.getElementById("loginIdentifier").value;
+    const password = document.getElementById("loginPassword").value;
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(userCredential => alert("Login successful!"))
+      .catch(error => alert("Login failed: " + error.message));
+  }
+</script>
+
 </head>
 <body class="min-h-screen">
     <!-- Login/Registration Modal -->
