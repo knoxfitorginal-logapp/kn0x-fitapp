@@ -1,113 +1,1616 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kn0x-Fit App</title>
-  <style>
-    body {{ font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; padding: 0; }}
-    .container {{ max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }}
-    .hidden {{ display: none; }}
-    .button {{ padding: 10px 20px; background: #111827; color: white; border: none; cursor: pointer; margin-top: 10px; width: 100%; }}
-    .input {{ width: 100%; padding: 8px; margin-top: 10px; }}
-    .toggle {{ margin-top: 10px; text-align: center; }}
-  </style>
-  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth-compat.js"></script>
+<script>
+  const CLIENT_ID = '6815701232-k56kffkhcqvi6c8dslssdtlfra52aul9.apps.googleusercontent.com';
+  const API_KEY = 'AIzaSyDNEeEFIywkmIuTtMO2HvwmpMzaRl56AHQ';
+  const APP_ID = '117502864207';
+</script>
+<script async="" defer="" onload="this.onload=function(){};handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()" src="https://apis.google.com/js/api.js">
+</script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kn0x-Fit | Fitness Tracker App</title>
+<meta content="#1a1a2e" name="theme-color"/>
+<link href="/manifest.json" rel="manifest"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://apis.google.com/js/api.js"></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .bg-icon {
+            position: absolute;
+            opacity: 0.03;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .upload-area {
+            border: 2px dashed #4a5568;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #4299e1;
+            background-color: rgba(66, 153, 225, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #4299e1;
+            background-color: rgba(66, 153, 225, 0.1);
+        }
+        
+        .log-entry {
+            transition: all 0.3s ease;
+        }
+        
+        .log-entry:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: #1a1a2e;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #16213e;
+            transform: translateY(-2px);
+        }
+        
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background-color: #f44336;
+        }
+
+        .toast.warning {
+            background-color: #ff9800;
+        }
+
+        /* Auth Modal Styles */
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #1a1a2e;
+            border-color: #1a1a2e;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats cards */
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Custom checkbox */
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #1a1a2e;
+            border-color: #1a1a2e;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .upload-area {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            header nav ul {
+                gap: 10px;
+            }
+            
+            .thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+<!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.1/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBZ6hZRwtPRYNgNU_EDFAvWq_9sGvKoCv4",
+  authDomain: "kn0xfitlog-auth.firebaseapp.com",
+  projectId: "kn0xfitlog-auth",
+  storageBucket: "kn0xfitlog-auth.firebasestorage.app",
+  messagingSenderId: "232941738904",
+  appId: "1:232941738904:web:1dc79f624e10207592a9ed"
+};
+firebase.initializeApp(firebaseConfig);
+
+function handleLogin() {
+  const email = document.getElementById("loginIdentifier").value;
+  const password = document.getElementById("loginPassword").value;
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(() => showMainApp())
+    .catch(error => alert("Login failed: " + error.message));
+}
+
+function handleRegister() {
+  const email = document.getElementById("registerEmail").value;
+  const password = document.getElementById("registerPassword").value;
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      alert("Registered successfully!");
+      showMainApp();
+    })
+    .catch(error => alert("Registration failed: " + error.message));
+}
+
+function showMainApp() {
+  const modal = document.querySelector(".relative.z-50");
+  const blur = document.querySelector(".blur-sm");
+  if (modal) modal.style.display = "none";
+  if (blur) blur.classList.remove("blur-sm");
+}
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) showMainApp();
+});
+        </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const loginTab = document.getElementById("loginTab");
+    const registerTab = document.getElementById("registerTab");
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+
+    if (loginTab && registerTab && loginForm && registerForm) {
+      loginTab.addEventListener("click", function () {
+        loginTab.classList.add("text-gray-700", "border-red-500");
+        registerTab.classList.remove("text-gray-700", "border-red-500");
+        registerTab.classList.add("text-gray-500");
+
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+      });
+
+      registerTab.addEventListener("click", function () {
+        registerTab.classList.add("text-gray-700", "border-red-500");
+        loginTab.classList.remove("text-gray-700", "border-red-500");
+        loginTab.classList.add("text-gray-500");
+
+        registerForm.style.display = "block";
+        loginForm.style.display = "none";
+      });
+
+      // Default view: show login
+      loginForm.style.display = "block";
+      registerForm.style.display = "none";
+    }
+  });
+</script>
 </head>
-<body>
+<body class="min-h-screen">
+<!-- Login/Registration Modal -->
+<div class="modal" id="authModal" style="display: flex;">
+<div class="modal-content max-w-md">
+<div class="text-center mb-6">
+<i class="fas fa-dumbbell text-4xl text-red-500 mb-3"></i>
+<h3 class="text-2xl font-bold text-gray-800">Welcome to Kn0x-Fit</h3>
+<p class="text-gray-600 mt-1">Track your fitness journey with us</p>
+</div>
+<div class="tabs flex border-b border-gray-200 mb-6">
+<button class="tab-btn active px-4 py-2 font-medium text-gray-700 border-b-2 border-red-500" id="loginBtn" onclick="handleLogin()" type="button">Login</button>
+<button class="tab-btn px-4 py-2 font-medium text-gray-500" id="registerBtn" onclick="handleRegister()" type="button">Register</button>
+</div>
+<!-- Login Form -->
+<form class="space-y-4" id="loginForm">
+<div>
+<label class="block text-gray-700 mb-1">Email or Mobile</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="loginIdentifier" placeholder="Enter email or mobile number" required="" type="text"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-1">Password</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="loginPassword" placeholder="Enter password" required="" type="password"/>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center">
+<input class="custom-checkbox mr-2" id="rememberMe" type="checkbox"/>
+<label class="text-sm text-gray-700 cursor-pointer" for="rememberMe">Remember me</label>
+</div>
+<a class="text-sm text-blue-500 hover:underline" href="#">Forgot password?</a>
+</div>
+<button class="btn-primary text-white px-6 py-3 rounded-lg font-medium w-full" type="submit">
+                    Login
+                </button>
+</form>
+<!-- Registration Form -->
+<form class="space-y-4 hidden" id="registerForm">
+<div>
+<label class="block text-gray-700 mb-1">Full Name</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="registerName" placeholder="Enter your full name" required="" type="text"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-1">Email</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="registerEmail" placeholder="Enter email address" required="" type="email"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-1">Mobile Number</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="registerMobile" placeholder="Enter mobile number" required="" type="tel"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-1">Password</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="loginPassword" minlength="6" placeholder="Create password (min 6 chars)" required="" type="password"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-1">Confirm Password</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="loginPassword" placeholder="Confirm password" required="" type="password"/>
+</div>
+<div class="flex items-center">
+<input class="custom-checkbox mr-2" id="acceptTerms" required="" type="checkbox"/>
+<label class="text-sm text-gray-700 cursor-pointer" for="acceptTerms">I agree to the <a class="text-blue-500 hover:underline" href="#">Terms &amp; Conditions</a></label>
+</div>
+<button class="btn-primary text-white px-6 py-3 rounded-lg font-medium w-full" type="submit">
+                    Register
+                </button>
+</form>
+<div class="mt-6 text-center text-sm text-gray-600">
+<p id="switchFormText">Don't have an account? <a class="text-blue-500 hover:underline" href="#" id="switchFormBtn">Register</a></p>
+</div>
+</div>
+</div>
+<header class="gradient-bg text-white shadow-lg" style="display: none;">
+<div class="container mx-auto px-4 py-6">
+<div class="flex justify-between items-center">
+<div class="flex items-center space-x-2">
+<i class="fas fa-dumbbell text-2xl text-red-500"></i>
+<h1 class="text-2xl font-bold">Kn0x-Fit</h1>
+</div>
+<nav>
+<ul class="flex space-x-6">
+<li><a class="hover:text-red-400 transition" href="#">Home</a></li>
+<li><a class="hover:text-red-400 transition" href="#">Dashboard</a></li>
+<li><a class="hover:text-red-400 transition" href="#">Profile</a></li>
+<li><a class="hover:text-red-400 transition" href="#"><i class="fas fa-bell"></i></a></li>
+<li><a class="hover:text-red-400 transition" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></a></li>
+</ul>
+</nav>
+</div>
+</div>
+</header>
+<main class="container mx-auto px-4 py-8">
+<div class="max-w-4xl mx-auto">
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="stat-card bg-white rounded-xl shadow-md p-4 text-center">
+<div class="text-3xl font-bold text-gray-800 mb-1">24</div>
+<div class="text-sm text-gray-600">Log Entries</div>
+<div class="mt-2">
+<i class="fas fa-clipboard-list text-blue-500"></i>
+</div>
+</div>
+<div class="stat-card bg-white rounded-xl shadow-md p-4 text-center">
+<div class="text-3xl font-bold text-gray-800 mb-1">18</div>
+<div class="text-sm text-gray-600">Workout Days</div>
+<div class="mt-2">
+<i class="fas fa-fire text-red-500"></i>
+</div>
+</div>
+<div class="stat-card bg-white rounded-xl shadow-md p-4 text-center">
+<div class="text-3xl font-bold text-gray-800 mb-1">87%</div>
+<div class="text-sm text-gray-600">Consistency</div>
+<div class="mt-2">
+<i class="fas fa-chart-line text-green-500"></i>
+</div>
+</div>
+</div>
+<div class="text-center mb-10">
+<h2 class="text-3xl font-bold text-gray-800 mb-2">Daily Fitness Log</h2>
+<p class="text-gray-600">Upload your daily diet and workout photos to track your progress</p>
+</div>
+<div class="bg-white rounded-xl shadow-md p-6 mb-8">
+<h3 class="text-xl font-semibold text-gray-800 mb-4">New Log Entry</h3>
+<form class="space-y-6" id="logForm">
+<div>
+<label class="block text-gray-700 mb-2">Today's Date</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="currentDate" readonly="" type="text"/>
+<p class="text-xs text-gray-500 mt-1">Automatically detected based on your location</p>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Current Time</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="currentTime" readonly="" type="text"/>
+<p class="text-xs text-gray-500 mt-1">Updates in real-time</p>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Weight (kg)</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="weight" placeholder="Enter your current weight" step="0.1" type="number"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Workout Completed</label>
+<div class="flex items-center">
+<input class="custom-checkbox mr-2" id="workoutCompleted" type="checkbox"/>
+<label class="text-gray-700 cursor-pointer" for="workoutCompleted">Mark if you completed today's workout</label>
+</div>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Diet Photos</label>
+<button class="upload-area rounded-lg p-8 text-center cursor-pointer w-full" onclick="showPicker('diet')" type="button">
+<i class="fas fa-utensils text-4xl text-gray-400 mb-3"></i>
+<p class="text-gray-500">Click to select diet photos from Google Drive</p>
+</button>
+<div class="mt-4 flex flex-wrap gap-3" id="dietPreview"></div>
+<input id="dietFiles" name="dietFiles" type="hidden"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-2">Workout Photos</label>
+<button class="upload-area rounded-lg p-8 text-center cursor-pointer w-full" onclick="showPicker('workout')" type="button">
+<i class="fas fa-running text-4xl text-gray-400 mb-3"></i>
+<p class="text-gray-500">Click to select workout photos from Google Drive</p>
+</button>
+<div class="mt-4 flex flex-wrap gap-3" id="workoutPreview"></div>
+<input id="workoutFiles" name="workoutFiles" type="hidden"/>
+</div>
+<div>
+<label class="block text-gray-700 mb-2" for="notes">Additional Notes</label>
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="notes" placeholder="Any additional comments about your day..." rows="3"></textarea>
+</div>
+<button class="btn-primary text-white px-6 py-3 rounded-lg font-medium w-full flex items-center justify-center space-x-2" type="submit">
+<i class="fas fa-save"></i>
+<span>Save Log Entry</span>
+</button>
+</form>
+</div>
+<!-- Progress Section -->
+<div class="bg-white rounded-xl shadow-md p-6 mb-8">
+<h3 class="text-xl font-semibold text-gray-800 mb-4">Your Progress</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-sm font-medium text-gray-700">Weekly Goal Completion</span>
+<span class="text-sm font-medium text-gray-700">4/7 days</span>
+</div>
+<div class="progress-container">
+<div class="progress-bar" style="width: 57%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-sm font-medium text-gray-700">AI-Calculated Consistency</span>
+<span class="text-sm font-medium text-gray-700">${monthlyConsistency}%</span>
+</div>
+<div class="progress-container">
+<div class="progress-bar" style="width: ${monthlyConsistency}%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1">Based on workouts, streaks, frequency &amp; progress</p>
+</div>
+</div>
+</div>
+<!-- Previous Entries with Filter -->
+<div class="bg-white rounded-xl shadow-md p-6">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-semibold text-gray-800">Previous Entries</h3>
+<div class="flex items-center space-x-2">
+<select class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="filterBy">
+<option value="all">All Entries</option>
+<option value="week">This Week</option>
+<option value="month">This Month</option>
+<option value="workout">With Workout</option>
+</select>
+<button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition" id="clearFilter">Clear</button>
+</div>
+</div>
+<div class="space-y-4 max-h-[600px] overflow-y-auto pr-2" id="logEntries">
+<!-- Sample entries for demonstration -->
+<div class="log-entry bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="font-semibold text-gray-800">June 15, 2023</h4>
+<p class="text-sm text-gray-500">10:45 AM</p>
+</div>
+<button class="text-red-500 hover:text-red-700 delete-entry">
+<i class="fas fa-trash"></i>
+</button>
+</div>
+<div class="mb-1">
+<span class="text-sm font-medium text-gray-700">Weight: </span>
+<span class="text-sm text-gray-600">75.5 kg</span>
+</div>
+<div class="mb-3">
+<span class="text-sm font-medium text-gray-700">Workout: </span>
+<span class="text-sm text-green-600 font-medium"><i class="fas fa-check-circle mr-1"></i>Completed</span>
+</div>
+<div class="mb-3">
+<h5 class="text-sm font-medium text-gray-700 mb-1">Diet Photos (2)</h5>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">breakfast.jpg</span>
+<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">lunch.jpg</span>
+</div>
+</div>
+<div class="mb-3">
+<h5 class="text-sm font-medium text-gray-700 mb-1">Workout Photos (1)</h5>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">gym_session.jpg</span>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-gray-200">
+<h5 class="text-sm font-medium text-gray-700 mb-1">Notes</h5>
+<p class="text-sm text-gray-600">Felt great today! Increased my bench press by 5kg. Need to focus on hydration.</p>
+</div>
+</div>
+<div class="log-entry bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="font-semibold text-gray-800">June 14, 2023</h4>
+<p class="text-sm text-gray-500">09:30 AM</p>
+</div>
+<button class="text-red-500 hover:text-red-700 delete-entry">
+<i class="fas fa-trash"></i>
+</button>
+</div>
+<div class="mb-1">
+<span class="text-sm font-medium text-gray-700">Weight: </span>
+<span class="text-sm text-gray-600">75.8 kg</span>
+</div>
+<div class="mb-3">
+<span class="text-sm font-medium text-gray-700">Workout: </span>
+<span class="text-sm text-red-600 font-medium"><i class="fas fa-times-circle mr-1"></i>Missed</span>
+</div>
+<div class="mb-3">
+<h5 class="text-sm font-medium text-gray-700 mb-1">Diet Photos (3)</h5>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">breakfast.jpg</span>
+<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">lunch.jpg</span>
+<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">dinner.jpg</span>
+</div>
+</div>
+<div class="mb-3">
+<h5 class="text-sm font-medium text-gray-700 mb-1">Workout Photos (0)</h5>
+<div class="flex flex-wrap gap-2">
+<span class="text-xs text-gray-500">No workout photos</span>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-gray-200">
+<h5 class="text-sm font-medium text-gray-700 mb-1">Notes</h5>
+<p class="text-sm text-gray-600">Rest day. Focused on meal prep for the week ahead.</p>
+</div>
+</div>
+<div class="text-center py-8 text-gray-500 hidden" id="noEntriesMessage">
+<i class="fas fa-clipboard-list text-4xl mb-3"></i>
+<p>No entries found matching your filter. Submit a new log above!</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="gradient-bg text-white py-8 mt-12">
+<div class="container mx-auto px-4 text-center">
+<p>© 2023 Kn0x-Fit. All rights reserved.</p>
+<div class="flex justify-center space-x-4 mt-4">
+<a class="hover:text-red-400 transition" href="#"><i class="fab fa-facebook-f"></i></a>
+<a class="hover:text-red-400 transition" href="#"><i class="fab fa-instagram"></i></a>
+<a class="hover:text-red-400 transition" href="#"><i class="fab fa-twitter"></i></a>
+<a class="hover:text-red-400 transition" href="#"><i class="fab fa-youtube"></i></a>
+</div>
+</div>
+</footer>
+<!-- Toast Notification -->
+<div class="toast" id="toast">
+<i class="fas fa-check-circle"></i>
+<span id="toastMessage">Log entry saved successfully!</span>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal">
+<div class="modal-content">
+<div class="text-center mb-4">
+<i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">Confirm Deletion</h3>
+<p class="text-gray-600 mt-1">Are you sure you want to delete this log entry?</p>
+</div>
+<div class="flex justify-center space-x-4">
+<button class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition" id="cancelDelete">Cancel</button>
+<button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition" id="confirmDelete">Delete</button>
+</div>
+</div>
+</div>
+<script>
+        // Google Drive API configuration
+        // These should be replaced with your actual Google API credentials
+        const API_KEY = 'YOUR_GOOGLE_API_KEY';
+        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+        const APP_ID = 'YOUR_GOOGLE_APP_ID';
+        const SCOPE = 'https://www.googleapis.com/auth/drive.file';
+        const FOLDER_ID = '1NZhrC-4V6JsYx028BUFkYjjlDTdvIByk'; // Your shared folder ID
+        
+        let googleTokenClient;
+        let selectedFiles = {
+            diet: [],
+            workout: []
+        };
+        
+        // Load Google API client
+        function loadGAPI() {
+            gapi.load('client:picker', {
+                callback: function() {
+                    gapi.client.init({
+                        apiKey: API_KEY,
+                        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+                    });
+                    
+                    // Load the Google Identity Services library
+                    google.accounts.oauth2.initTokenClient({
+                        client_id: CLIENT_ID,
+                        scope: SCOPE,
+                        callback: (tokenResponse) => {
+                            googleTokenClient = tokenResponse;
+                        }
+                    });
+                },
+                onerror: function() {
+                    showToast('Failed to load Google API', 'error');
+                }
+            });
+        }
+        
+        // Show Google Picker
+        function showPicker(type) {
+            if (!googleTokenClient) {
+                google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: SCOPE,
+                    callback: (tokenResponse) => {
+                        googleTokenClient = tokenResponse;
+                        showPickerAfterAuth(type);
+                    }
+                }).requestAccessToken();
+            } else {
+                showPickerAfterAuth(type);
+            }
+        }
+        
+        function showPickerAfterAuth(type) {
+            const view = new google.picker.View(google.picker.ViewId.DOCS_IMAGES);
+            view.setMimeTypes("image/jpeg,image/png,image/gif");
+            
+            const picker = new google.picker.PickerBuilder()
+                .setAppId(APP_ID)
+                .setOAuthToken(googleTokenClient.access_token)
+                .addView(view)
+                .setCallback(pickerCallback.bind(null, type))
+                .build();
+            
+            picker.setVisible(true);
+        }
+        
+        // Mock file picker implementation
+        function pickerCallback(type, data) {
+            if (data.action === google.picker.Action.PICKED) {
+                const mockFiles = {
+                    diet: [
+                        {id: 'diet1', name: 'breakfast.jpg', url: 'https://via.placeholder.com/150'},
+                        {id: 'diet2', name: 'lunch.jpg', url: 'https://via.placeholder.com/150'},
+                        {id: 'diet3', name: 'dinner.jpg', url: 'https://via.placeholder.com/150'}
+                    ],
+                    workout: [
+                        {id: 'workout1', name: 'gym_session.jpg', url: 'https://via.placeholder.com/150'},
+                        {id: 'workout2', name: 'running.jpg', url: 'https://via.placeholder.com/150'}
+                    ]
+                };
+                
+                // Add a random file from our mock data
+                const files = mockFiles[type];
+                const randomFile = files[Math.floor(Math.random() * files.length)];
+                
+                selectedFiles[type].push(randomFile);
+                updatePreview(type);
+            }
+        }
+        
+        // Update preview display
+        function updatePreview(type) {
+            const previewContainer = document.getElementById(`${type}Preview`);
+            previewContainer.innerHTML = '';
+            
+            if (selectedFiles[type].length === 0) {
+                previewContainer.innerHTML = '<p class="text-gray-500">No files selected</p>';
+                return;
+            }
+            
+            selectedFiles[type].forEach((file, index) => {
+                const preview = document.createElement('div');
+                preview.className = 'relative group';
+                
+                const img = document.createElement('img');
+                img.src = `https://drive.google.com/thumbnail?id=${file.id}`;
+                img.className = 'thumbnail';
+                img.alt = file.name;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                removeBtn.className = 'absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity';
+                removeBtn.addEventListener('click', () => {
+                    selectedFiles[type].splice(index, 1);
+                    updatePreview(type);
+                });
+                
+                preview.appendChild(img);
+                preview.appendChild(removeBtn);
+                previewContainer.appendChild(preview);
+            });
+            
+            document.getElementById(`${type}Files`).value = JSON.stringify(selectedFiles[type]);
+        }
+        
+        // Smart date/time handling with timezone awareness
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Detect user's timezone
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            
+            // Format date with timezone awareness
+            const dateOptions = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                timeZone: timeZone
+            };
+            document.getElementById('currentDate').value = now.toLocaleDateString('en-US', dateOptions);
+            
+            // Format time with timezone awareness and seconds
+            const timeOptions = {
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+                timeZone: timeZone
+            };
+            document.getElementById('currentTime').value = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Smart time greeting based on hour
+            const hour = now.getHours();
+            let greeting = '';
+            if (hour < 12) greeting = 'Good morning';
+            else if (hour < 18) greeting = 'Good afternoon';
+            else greeting = 'Good evening';
+            
+            // Update greeting in the UI if element exists
+            const greetingEl = document.getElementById('timeGreeting');
+            if (greetingEl) {
+                greetingEl.textContent = `${greeting}! It's currently`;
+            }
+        }
+        
+        // Update time every second for smooth seconds display
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        // Add greeting element to the time display
+        const timeLabel = document.querySelector('label[for="currentTime"]');
+        if (timeLabel) {
+            timeLabel.innerHTML = `<span id="timeGreeting"></span> Current Time`;
+        }
+        
+        // Handle file uploads for diet photos
+        const dietUpload = document.getElementById('dietUpload');
+        const dietInput = document.getElementById('dietInput');
+        const dietPreview = document.getElementById('dietPreview');
+        
+        dietUpload.addEventListener('click', () => dietInput.click());
+        
+        dietInput.addEventListener('change', function() {
+            handleFiles(this.files, dietPreview);
+        });
+        
+        // Handle drag and drop for diet photos
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dietUpload.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dietUpload.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dietUpload.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dietUpload.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            dietUpload.classList.remove('dragover');
+        }
+        
+        dietUpload.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            dietInput.files = files;
+            handleFiles(files, dietPreview);
+        });
+        
+        // Handle file uploads for workout photos
+        const workoutUpload = document.getElementById('workoutUpload');
+        const workoutInput = document.getElementById('workoutInput');
+        const workoutPreview = document.getElementById('workoutPreview');
+        
+        workoutUpload.addEventListener('click', () => workoutInput.click());
+        
+        workoutInput.addEventListener('change', function() {
+            handleFiles(this.files, workoutPreview);
+        });
+        
+        // Handle drag and drop for workout photos
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            workoutUpload.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            workoutUpload.addEventListener(eventName, () => {
+                workoutUpload.classList.add('dragover');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            workoutUpload.addEventListener(eventName, () => {
+                workoutUpload.classList.remove('dragover');
+            }, false);
+        });
+        
+        workoutUpload.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            workoutInput.files = files;
+            handleFiles(files, workoutPreview);
+        });
+        
+        // Handle the uploaded files
+        function handleFiles(files, previewContainer) {
+            previewContainer.innerHTML = '';
+            
+            if (files.length === 0) {
+                const noFiles = document.createElement('p');
+                noFiles.textContent = 'No files selected';
+                noFiles.className = 'text-gray-500';
+                previewContainer.appendChild(noFiles);
+                return;
+            }
+            
+            Array.from(files).forEach(file => {
+                if (!file.type.match('image.*')) return;
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'relative group';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'thumbnail';
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    removeBtn.className = 'absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity';
+                    removeBtn.addEventListener('click', () => {
+                        preview.remove();
+                        if (previewContainer.children.length === 0) {
+                            const noFiles = document.createElement('p');
+                            noFiles.textContent = 'No files selected';
+                            noFiles.className = 'text-gray-500';
+                            previewContainer.appendChild(noFiles);
+                        }
+                    });
+                    
+                    preview.appendChild(img);
+                    preview.appendChild(removeBtn);
+                    previewContainer.appendChild(preview);
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = 'toast';
+            
+            if (type === 'error') {
+                toast.classList.add('error');
+            } else if (type === 'warning') {
+                toast.classList.add('warning');
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Handle form submission
+        document.getElementById('logForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const date = document.getElementById('currentDate').value;
+            const time = document.getElementById('currentTime').value;
+            const weight = document.getElementById('weight').value;
+            const workoutCompleted = document.getElementById('workoutCompleted').checked;
+            const notes = document.getElementById('notes').value;
+            
+            // Validate required fields
+            if (!weight) {
+                showToast('Please enter your weight', 'error');
+                return;
+            }
+            
+            // Upload files to Drive if any
+            try {
+                await uploadFilesToDrive();
+            } catch (error) {
+                showToast('Failed to upload files to Drive', 'error');
+                console.error(error);
+                return;
+            }
+            
+            // Get diet and workout file info
+            const dietFiles = selectedFiles.diet.map(file => file.name);
+            const workoutFiles = selectedFiles.workout.map(file => file.name);
+            
+            // Create a new log entry
+            const entry = document.createElement('div');
+            entry.className = 'log-entry bg-gray-50 rounded-lg p-4 shadow-sm hover:shadow-md';
+            
+            entry.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">${date}</h4>
+                        <p class="text-sm text-gray-500">${time}</p>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 delete-entry">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-1">
+                    <span class="text-sm font-medium text-gray-700">Weight: </span>
+                    <span class="text-sm text-gray-600">${weight} kg</span>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="text-sm font-medium text-gray-700">Workout: </span>
+                    <span class="text-sm ${workoutCompleted ? 'text-green-600' : 'text-red-600'} font-medium">
+                        <i class="fas ${workoutCompleted ? 'fa-check-circle' : 'fa-times-circle'} mr-1"></i>
+                        ${workoutCompleted ? 'Completed' : 'Missed'}
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-gray-700 mb-1">Diet Photos (${dietFiles.length})</h5>
+                    <div class="flex flex-wrap gap-2">
+                        ${dietFiles.length > 0 ? 
+                           dietFiles.map(file => `<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${file}</span>`).join('') : 
+                           '<span class="text-xs text-gray-500">No diet photos</span>'}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5 class="text-sm font-medium text-gray-700 mb-1">Workout Photos (${workoutFiles.length})</h5>
+                    <div class="flex flex-wrap gap-2">
+                        ${workoutFiles.length > 0 ? 
+                           workoutFiles.map(file => `<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">${file}</span>`).join('') : 
+                           '<span class="text-xs text-gray-500">No workout photos</span>'}
+                    </div>
+                </div>
+                
+                ${notes ? `
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <h5 class="text-sm font-medium text-gray-700 mb-1">Notes</h5>
+                    <p class="text-sm text-gray-600">${notes}</p>
+                </div>
+                ` : ''}
+            `;
+            
+            // Add to the top of the entries list
+            const entriesContainer = document.getElementById('logEntries');
+            const noEntriesMessage = document.getElementById('noEntriesMessage');
+            
+            if (noEntriesMessage.classList.contains('hidden')) {
+                // Remove the "no entries" message if it's the first entry
+                const emptyMessage = entriesContainer.querySelector('.text-center');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+            } else {
+                noEntriesMessage.classList.add('hidden');
+            }
+            
+            entriesContainer.prepend(entry);
+            
+            // Add delete functionality
+            entry.querySelector('.delete-entry').addEventListener('click', function() {
+                showDeleteModal(entry);
+            });
+            
+            // Reset the form
+            this.reset();
+            dietPreview.innerHTML = '';
+            workoutPreview.innerHTML = '';
+            updateDateTime();
+            
+            // Show success message
+            showToast('Log entry saved successfully!');
+            
+            // Update stats
+            updateStats();
+        });
+        
+        // Delete confirmation modal
+        let entryToDelete = null;
+        
+        function showDeleteModal(entry) {
+            entryToDelete = entry;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+        
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            document.getElementById('deleteModal').style.display = 'none';
+            entryToDelete = null;
+        });
+        
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (entryToDelete) {
+                entryToDelete.remove();
+                document.getElementById('deleteModal').style.display = 'none';
+                entryToDelete = null;
+                
+                // Show success message
+                showToast('Log entry deleted successfully!');
+                
+                // Check if there are no more entries
+                const entriesContainer = document.getElementById('logEntries');
+                if (entriesContainer.children.length === 1 && entriesContainer.firstChild.id === 'noEntriesMessage') {
+                    document.getElementById('noEntriesMessage').classList.remove('hidden');
+                }
+                
+                // Update stats
+                updateStats();
+            }
+        });
+        
+        // Filter functionality
+        document.getElementById('filterBy').addEventListener('change', function() {
+            const filterValue = this.value;
+            const entries = document.querySelectorAll('.log-entry');
+            let visibleCount = 0;
+            
+            entries.forEach(entry => {
+                let showEntry = true;
+                
+                if (filterValue === 'week') {
+                    // Filter by this week (simplified for demo)
+                    const entryDate = entry.querySelector('h4').textContent;
+                    showEntry = entryDate.includes('June 15') || entryDate.includes('June 14');
+                } else if (filterValue === 'month') {
+                    // Filter by this month (simplified for demo)
+                    const entryDate = entry.querySelector('h4').textContent;
+                    showEntry = entryDate.includes('June');
+                } else if (filterValue === 'workout') {
+                    // Filter by workout completed
+                    const workoutStatus = entry.querySelector('.mb-3 span').textContent;
+                    showEntry = workoutStatus.includes('Completed');
+                }
+                
+                if (showEntry) {
+                    entry.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    entry.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no entries message
+            const noEntriesMessage = document.getElementById('noEntriesMessage');
+            if (visibleCount === 0 && filterValue !== 'all') {
+                noEntriesMessage.classList.remove('hidden');
+            } else {
+                noEntriesMessage.classList.add('hidden');
+            }
+        });
+        
+        document.getElementById('clearFilter').addEventListener('click', function() {
+            document.getElementById('filterBy').value = 'all';
+            const entries = document.querySelectorAll('.log-entry');
+            
+            entries.forEach(entry => {
+                entry.style.display = 'block';
+            });
+            
+            document.getElementById('noEntriesMessage').classList.add('hidden');
+        });
+        
+        // Add delete functionality to existing entries
+        document.querySelectorAll('.delete-entry').forEach(button => {
+            button.addEventListener('click', function() {
+                const entry = this.closest('.log-entry');
+                showDeleteModal(entry);
+            });
+        });
+        
+        // AI-based consistency analysis
+        function calculateConsistencyScore(logs) {
+            if (logs.length === 0) return 0;
+            
+            // Get last 30 days logs (or all if less than 30)
+            const recentLogs = logs.slice(0, 30);
+            const workoutCount = recentLogs.filter(log => log.workoutCompleted).length;
+            const baseScore = (workoutCount / recentLogs.length) * 100;
+            
+            // AI-enhanced factors
+            const streakBonus = calculateStreakBonus(recentLogs);
+            const frequencyBonus = calculateFrequencyBonus(recentLogs);
+            const progressBonus = calculateProgressBonus(recentLogs);
+            
+            // Weighted final score (base 70%, streak 15%, frequency 10%, progress 5%)
+            const finalScore = (baseScore * 0.7) + 
+                             (streakBonus * 15) + 
+                             (frequencyBonus * 10) + 
+                             (progressBonus * 5);
+            
+            return Math.min(Math.round(finalScore), 100); // Cap at 100
+        }
 
-  <div class="container" id="authContainer">
-    <h2 id="formTitle">Login</h2>
-    <input class="input" type="email" id="email" placeholder="Email" />
-    <input class="input" type="password" id="password" placeholder="Password" />
-    <button class="button" onclick="handleLogin()" id="loginBtn">Login</button>
-    <button class="button hidden" onclick="handleRegister()" id="registerBtn">Register</button>
-    <div class="toggle">
-      <a href="#" onclick="toggleForm()">Switch to <span id="toggleText">Register</span></a>
-    </div>
-  </div>
+        function calculateStreakBonus(logs) {
+            let currentStreak = 0;
+            let maxStreak = 0;
+            
+            logs.forEach(log => {
+                if (log.workoutCompleted) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 0;
+                }
+            });
+            
+            // Normalize streak to 0-1 range (max streak of 30 days)
+            return maxStreak / 30;
+        }
 
-  <div class="container hidden" id="mainApp">
-    <h2>Welcome to Kn0x-Fit!</h2>
-    <p>You are now logged in.</p>
-    <button class="button" onclick="handleLogout()">Logout</button>
-  </div>
+        function calculateFrequencyBonus(logs) {
+            if (logs.length < 7) return 0;
+            
+            // Calculate average workouts per week
+            const weeklyAverage = logs.filter(l => l.workoutCompleted).length / (logs.length / 7);
+            
+            // Bonus for 3-5 workouts per week (optimal range)
+            if (weeklyAverage >= 3 && weeklyAverage <= 5) {
+                return 0.5 + ((weeklyAverage - 3) / 4); // 0.5 to 1.0
+            }
+            return 0;
+        }
 
-  <script>
-    const firebaseConfig = {{
-      apiKey: "AIzaSyBZ6hZRwtPRYNgNU_EDFAvWq_9sGvKoCv4",
-      authDomain: "kn0xfitlog-auth.firebaseapp.com",
-      projectId: "kn0xfitlog-auth",
-      storageBucket: "kn0xfitlog-auth.firebasestorage.app",
-      messagingSenderId: "232941738904",
-      appId: "1:232941738904:web:1dc79f624e10207592a9ed"
-    }};
-    firebase.initializeApp(firebaseConfig);
+        function calculateProgressBonus(logs) {
+            if (logs.length < 2) return 0;
+            
+            // Check if weight is trending downward (improving)
+            const firstWeight = parseFloat(logs[logs.length-1].weight);
+            const lastWeight = parseFloat(logs[0].weight);
+            
+            if (lastWeight < firstWeight) {
+                const progress = (firstWeight - lastWeight) / firstWeight;
+                return Math.min(progress * 10, 1); // Max 1.0 for 10% weight loss
+            }
+            return 0;
+        }
 
-    function toggleForm() {{
-      const loginBtn = document.getElementById("loginBtn");
-      const registerBtn = document.getElementById("registerBtn");
-      const toggleText = document.getElementById("toggleText");
-      const formTitle = document.getElementById("formTitle");
+        // Update stats based on actual log entries
+        function updateStats() {
+            const entries = document.querySelectorAll('.log-entry');
+            const workoutDays = document.querySelectorAll('.log-entry .text-green-600').length;
+            
+            // Calculate weekly consistency (max 7 days)
+            const weekDays = Math.min(7, entries.length);
+            const weeklyConsistency = weekDays > 0 ? Math.round((workoutDays / weekDays) * 100) : 0;
+            
+            // Get log data for AI analysis
+            const logs = Array.from(entries).map(entry => {
+                return {
+                    date: entry.querySelector('h4').textContent,
+                    weight: entry.querySelector('.mb-1 span:nth-child(2)').textContent.replace(' kg', ''),
+                    workoutCompleted: entry.querySelector('.mb-3 span').textContent.includes('Completed'),
+                    notes: entry.querySelector('.mt-3')?.querySelector('p')?.textContent || ''
+                };
+            }).reverse(); // Oldest first
+            
+            // Calculate AI-enhanced monthly consistency
+            const monthlyConsistency = calculateConsistencyScore(logs);
+            
+            // Update the stats cards
+            document.querySelector('.stat-card:nth-child(1) .text-3xl').textContent = entries.length;
+            document.querySelector('.stat-card:nth-child(2) .text-3xl').textContent = workoutDays;
+            document.querySelector('.stat-card:nth-child(3) .text-3xl').textContent = `${monthlyConsistency}%`;
+            
+            // Add AI feedback based on consistency score
+            const feedbackElement = document.querySelector('.stat-card:nth-child(3) .text-sm');
+            if (monthlyConsistency >= 80) {
+                feedbackElement.innerHTML = '<span class="text-green-600">Excellent!</span> Keep it up!';
+            } else if (monthlyConsistency >= 60) {
+                feedbackElement.innerHTML = '<span class="text-blue-600">Good</span> - Almost there!';
+            } else if (monthlyConsistency >= 40) {
+                feedbackElement.innerHTML = '<span class="text-yellow-600">Fair</span> - Room for improvement';
+            } else {
+                feedbackElement.innerHTML = '<span class="text-red-600">Needs work</span> - Try more workouts';
+            }
+            
+            // Update progress bars
+            document.querySelector('.progress-container:nth-of-type(1) .progress-bar').style.width = `${weeklyConsistency}%`;
+            document.querySelector('.progress-container:nth-of-type(2) .progress-bar').style.width = `${monthlyConsistency}%`;
+        }
+        
+        // Mock file upload function
+        async function uploadFilesToDrive() {
+            return new Promise((resolve) => {
+                // Simulate network delay
+                setTimeout(() => {
+                    console.log('Mock upload complete');
+                    resolve();
+                }, 1000);
+            });
+        }
+        
+        // Check for timezone discrepancies
+        function checkTimezoneDiscrepancy() {
+            try {
+                const browserOffset = new Date().getTimezoneOffset();
+                const guessedOffset = -(new Date().getTime() - new Date(new Date().toUTCString()).getTime()) / 60000;
+                
+                if (Math.abs(browserOffset - guessedOffset) > 30) {
+                    showToast('Your system timezone settings may be incorrect', 'warning');
+                }
+            } catch (e) {
+                console.log('Timezone check error:', e);
+            }
+        }
+        
+        // Authentication Functions
+        function toggleAuthForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const switchFormText = document.getElementById('switchFormText');
+            const switchFormBtn = document.getElementById('switchFormBtn');
+            
+            if (loginForm.classList.contains('hidden')) {
+                // Switch to login
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginTab.classList.remove('text-gray-500');
+                loginTab.classList.add('text-gray-700');
+                registerTab.classList.add('text-gray-500');
+                registerTab.classList.remove('text-gray-700');
+                switchFormText.innerHTML = 'Don\'t have an account? <a href="#" id="switchFormBtn" class="text-blue-500 hover:underline">Register</a>';
+            } else {
+                // Switch to register
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                loginTab.classList.remove('active');
+                registerTab.classList.add('active');
+                loginTab.classList.add('text-gray-500');
+                loginTab.classList.remove('text-gray-700');
+                registerTab.classList.remove('text-gray-500');
+                registerTab.classList.add('text-gray-700');
+                switchFormText.innerHTML = 'Already have an account? <a href="#" id="switchFormBtn" class="text-blue-500 hover:underline">Login</a>';
+            }
+        }
+        
+        // Handle tab switching
+        document.getElementById('loginTab').addEventListener('click', toggleAuthForms);
+        document.getElementById('registerTab').addEventListener('click', toggleAuthForms);
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'switchFormBtn') {
+                e.preventDefault();
+                toggleAuthForms();
+            }
+        });
+        
+        // Form validation
+        // Mock user database
+        const mockUsers = [];
+        
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const mobile = document.getElementById('registerMobile').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Validation
+            if (!name || !email || !mobile || !password || !confirmPassword) {
+                showToast('Please fill all fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            // Check if user already exists
+            if (mockUsers.some(user => user.email === email)) {
+                showToast('Email already registered', 'error');
+                return;
+            }
+            
+            // Add to mock database
+            mockUsers.push({
+                name,
+                email,
+                mobile,
+                password
+            });
+            
+            showToast('Registration successful!', 'success');
+            toggleAuthForms(); // Switch back to login
+            this.reset();
+        });
+        
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const identifier = document.getElementById('loginIdentifier').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Check for admin login
+            if (identifier === 'thekn0xfit@gmail.com' && password === 'dfoxy9845') {
+                // Admin login
+                document.getElementById('authModal').style.display = 'none';
+                document.querySelector('header').style.display = 'block';
+                document.querySelector('main').style.display = 'block';
+                document.querySelector('footer').style.display = 'block';
+                
+                // Show admin features
+                document.querySelector('nav ul').innerHTML += `
+                    <li><a href="#" class="hover:text-red-400 transition" id="adminDashboard">Admin Dashboard</a></li>
+                `;
+                
+                showToast('Welcome Admin!', 'success');
+                loadAllClientData();
+                this.reset();
+                return;
+            }
+            
+            // Regular user login
+            const user = mockUsers.find(u => 
+                u.email === identifier || u.mobile === identifier
+            );
+            
+            if (!user || user.password !== password) {
+                showToast('Invalid credentials', 'error');
+                return;
+            }
+            
+            // Successful login
+            document.getElementById('authModal').style.display = 'none';
+            document.querySelector('header').style.display = 'block';
+            document.querySelector('main').style.display = 'block';
+            document.querySelector('footer').style.display = 'block';
+            
+            showToast(`Welcome back, ${user.name}!`, 'success');
+            this.reset();
+        });
+        
+        // Function to load all client data (admin only)
+        function loadAllClientData() {
+            // In a real app, this would fetch from a database
+            // For demo, we'll mock some client data
+            const mockClients = [
+                {
+                    name: "John Doe",
+                    email: "john@example.com",
+                    logs: [
+                        { date: "June 15, 2023", weight: "75.5 kg", workout: true },
+                        { date: "June 14, 2023", weight: "75.8 kg", workout: false }
+                    ]
+                },
+                {
+                    name: "Jane Smith",
+                    email: "jane@example.com",
+                    logs: [
+                        { date: "June 15, 2023", weight: "62.3 kg", workout: true },
+                        { date: "June 13, 2023", weight: "62.5 kg", workout: true }
+                    ]
+                }
+            ];
 
-      if (loginBtn.classList.contains("hidden")) {{
-        loginBtn.classList.remove("hidden");
-        registerBtn.classList.add("hidden");
-        toggleText.innerText = "Register";
-        formTitle.innerText = "Login";
-      }} else {{
-        loginBtn.classList.add("hidden");
-        registerBtn.classList.remove("hidden");
-        toggleText.innerText = "Login";
-        formTitle.innerText = "Register";
-      }}
-    }}
+            // Create admin dashboard section
+            const adminSection = document.createElement('div');
+            adminSection.id = 'adminDashboardSection';
+            adminSection.className = 'bg-white rounded-xl shadow-md p-6 mb-8';
+            adminSection.innerHTML = `
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Admin Dashboard</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Client</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Log Entries</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Last Weight</th>
+                                <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Workout %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminClientList">
+                            ${mockClients.map(client => `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b border-gray-200">${client.name}</td>
+                                    <td class="py-2 px-4 border-b border-gray-200">${client.email}</td>
+                                    <td class="py-2 px-4 border-b border-gray-200">${client.logs.length}</td>
+                                    <td class="py-2 px-4 border-b border-gray-200">${client.logs[0].weight}</td>
+                                    <td class="py-2 px-4 border-b border-gray-200">
+                                        ${Math.round((client.logs.filter(log => log.workout).length / client.logs.length) * 100)}%
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
 
-    function handleLogin() {{
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(user => {{
-          showMainApp();
-        }})
-        .catch(error => {{
-          alert("Login Failed: " + error.message);
-        }});
-    }}
+            // Insert after the progress section
+            const progressSection = document.querySelector('.bg-white.rounded-xl.shadow-md.p-6.mb-8:nth-of-type(2)');
+            progressSection.after(adminSection);
 
-    function handleRegister() {{
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then(user => {{
-          alert("Registered Successfully");
-          showMainApp();
-        }})
-        .catch(error => {{
-          alert("Registration Failed: " + error.message);
-        }});
-    }}
+            // Add click handler for admin dashboard link
+            document.getElementById('adminDashboard')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('adminDashboardSection').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        }
 
-    function handleLogout() {{
-      firebase.auth().signOut().then(() => {{
-        document.getElementById("mainApp").classList.add("hidden");
-        document.getElementById("authContainer").classList.remove("hidden");
-      }});
-    }}
+        // Logout functionality
+        document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('main').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+            document.getElementById('authModal').style.display = 'flex';
+            
+            // Remove admin dashboard if exists
+            const adminSection = document.getElementById('adminDashboardSection');
+            if (adminSection) adminSection.remove();
+            
+            // Remove admin dashboard link
+            const adminLink = document.getElementById('adminDashboard');
+            if (adminLink) adminLink.remove();
+            
+            showToast('Logged out successfully', 'success');
+        });
 
-    function showMainApp() {{
-      document.getElementById("authContainer").classList.add("hidden");
-      document.getElementById("mainApp").classList.remove("hidden");
-    }}
+        // Initialize Google API and stats
+        loadGAPI();
+        updateStats();
+        checkTimezoneDiscrepancy();
+        
+        // Hide main content initially
+        document.querySelector('main').style.display = 'none';
+        document.querySelector('footer').style.display = 'none';
 
-    firebase.auth().onAuthStateChanged(user => {{
-      if (user) {{
-        showMainApp();
-      }}
-    }});
-  </script>
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          
+          // Show install button (you'll need to add this button to your HTML)
+          const installButton = document.getElementById('installButton');
+          if (installButton) {
+            installButton.style.display = 'block';
+            installButton.addEventListener('click', () => {
+              deferredPrompt.prompt();
+              deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                  console.log('User accepted install');
+                } else {
+                  console.log('User dismissed install');
+                }
+                deferredPrompt = null;
+              });
+            });
+          }
+        });
 
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+<i class="bg-icon fas fa-dumbbell text-9xl" style="top: 10%; left: 5%;"></i>
+<i class="bg-icon fas fa-apple-alt text-9xl" style="top: 30%; right: 5%; animation-delay: 1s;"></i>
+<i class="bg-icon fas fa-running text-9xl" style="bottom: 20%; left: 10%; animation-delay: 2s;"></i>
+<i class="bg-icon fas fa-utensils text-9xl" style="bottom: 40%; right: 15%; animation-delay: 3s;"></i>
+<i class="bg-icon fas fa-weight text-9xl" style="top: 60%; left: 20%; animation-delay: 4s;"></i>
 </body>
 </html>
