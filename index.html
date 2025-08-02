@@ -295,11 +295,14 @@
     const email = document.getElementById("loginIdentifier").value;
     const password = document.getElementById("loginPassword").value;
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(userCredential => alert("Login successful!"))
+      .then(userCredential => 
+alert("Login successful!");
+document.querySelector(".relative.z-50").style.display = "none";
+document.querySelector(".blur-sm").classList.remove("blur-sm");
+)
       .catch(error => alert("Login failed: " + error.message));
   }
 </script>
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const loginTab = document.getElementById("loginTab");
@@ -332,7 +335,6 @@
     }
   });
 </script>
-
 </head>
 <body class="min-h-screen">
 <!-- Login/Registration Modal -->
