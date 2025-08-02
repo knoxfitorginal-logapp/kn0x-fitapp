@@ -302,6 +302,16 @@ document.querySelector(".blur-sm").classList.remove("blur-sm");
 )
       .catch(error => alert("Login failed: " + error.message));
   }
+
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    const modal = document.querySelector(".relative.z-50");
+    const blurred = document.querySelector(".blur-sm");
+    if (modal) modal.style.display = "none";
+    if (blurred) blurred.classList.remove("blur-sm");
+  }
+});
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
